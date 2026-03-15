@@ -2,25 +2,25 @@
 #define IAS_H_
 
 #include <stdint.h>
-#include "../memoria/memoria.h"
-#include "../barramento/barramento.h"
+#include "../memory/memory.h"
+#include "../bus/bus.h"
 #include "../cpu/cpu.h"
 #include "../utils.h"
 
 typedef struct {
-    bool rodando;
+    bool running;
 } IASConfig;
 
 typedef struct {
     IASConfig config;
     CPU *cpu;
-    Barramento *barramento;
-    Memoria *memoria;
+    Bus *barramento;
+    Memory *memoria;
 } IAS;
 
-IAS *IAS_criar(CPU *cpu, Barramento *barramento, Memoria *memoria);
+IAS *IAS_create(CPU *cpu, Bus *barramento, Memory *memoria);
 void IAS_free(IAS *ias);
-void IAS_iniciar(IAS *ias, PALAVRA PC);
+void IAS_start(IAS *ias, WORD PC);
 void IAS_tick(IAS *ias);
 
 #endif

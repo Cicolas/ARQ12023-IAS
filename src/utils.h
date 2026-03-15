@@ -33,11 +33,11 @@
 
 #ifndef CONFIG_INSTRUCAO
     #define CONFIG_INSTRUCAO(pipeline, NOME, OP_CODE) \
-        pipeline_set_instrucao(                 \
+        pipeline_set_instruction(                 \
             pipeline, OP_CODE,                  \
-            NOME ## _busca_operandos,      \
-            NOME ## _executar,             \
-            NOME ## _escrita_resultados    \
+            NOME ## _search_operands,      \
+            NOME ## _execute,             \
+            NOME ## _write_results    \
         )
 #endif
 

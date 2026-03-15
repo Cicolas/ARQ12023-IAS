@@ -3,20 +3,20 @@
 
 #include <stdint.h>
 #include "../defs/defs.h"
-#include "../memoria/memoria.h"
-#include "../barramento/barramento.h"
+#include "../memory/memory.h"
+#include "../bus/bus.h"
 #include "../ula/ula.h"
 #include "../utils.h"
 #include "../pipeline/pipeline.h"
-#include "../instrucoes/defaults/buscar_instrucao.h"
+#include "../instructions/defaults/search_instruction.h"
 
 typedef struct {
     Pipeline *pipeline;
 } UC;
 
-UC *UC_criar(void);
+UC *UC_create(void);
 void UC_free(UC *uc);
 
-void UC_tick(UC *uc, ULA *ula, BancoRegistradores *banco, Barramento *barramento, Memoria *memoria);
+void UC_tick(const UC *uc, ALU *alu, RegistersBank *banco, Bus *barramento, Memory *memoria);
 
 #endif

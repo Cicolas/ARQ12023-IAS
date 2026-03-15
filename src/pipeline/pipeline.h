@@ -3,80 +3,80 @@
 
 #include <stdint.h>
 #include "../defs/defs.h"
-#include "../memoria/memoria.h"
-#include "../barramento/barramento.h"
+#include "../memory/memory.h"
+#include "../bus/bus.h"
 #include "../ula/ula.h"
 #include "../utils.h"
-#include "../instrucoes/defaults/decodificar.h"
+#include "../instructions/defaults/decode.h"
 
-#define FILA_DEPENDENCIA_SIZE 4
+#define DEPENDENCY_QUEUE_SIZE 4
 
-#define FUN_BUSCA_INSTRUCAO(nome) \
-    void (*nome)(BancoRegistradores *banco, Barramento *barramento, Memoria *memoria)
+#define FUN_SEARCH_INSTRUCTION(name) \
+    void (*name)(RegistersBank *bank, Bus *barramento, Memory *memoria)
 
-#define FUN_DECODIFICAR(nome) \
-    void (*nome)(BancoRegistradores *banco)
+#define FUN_DECODE(name) \
+    void (*name)(RegistersBank *bank)
 
-#define FUN_BUSCA_OPERANDOS(nome) \
-    void (*nome)(BancoRegistradores *banco, Barramento *barramento, Memoria *memoria)
+#define FUN_SEARCH_OPERANDS(name) \
+    void (*name)(RegistersBank *bank, Bus *barramento, Memory *memoria)
 
-#define FUN_EXECUCAO(nome) \
-    void (*nome)(int iteracao, BancoRegistradores *banco, ULA *ula, PipelineFlag *flags)
+#define FUN_EXECUTE(name) \
+    void (*name)(int interaction, RegistersBank *bank, ALU *alu, PipelineFlag *flags)
 
-#define FUN_ESCRITA_RESULTADOS(nome) \
-    void (*nome)(BancoRegistradores *banco, Barramento *barramento, Memoria *memoria, ULA *ula, PipelineFlag *flags)
-
-typedef struct {
-    short tempo;
-    FUN_BUSCA_OPERANDOS(f_busca_operandos);
-    FUN_EXECUCAO(f_executar);
-    FUN_ESCRITA_RESULTADOS(f_escrita_resultados);
-} InstrucaoConfig;
+#define FUN_WRITE_RESULTS(name) \
+    void (*name)(RegistersBank *bank, Bus *barramento, Memory *memoria, ALU *alu, PipelineFlag *flags)
 
 typedef struct {
-    INSTRUCAO op;
-    ARGUMENTO posicao;
-} NoDependencia;
+    short time;
+    FUN_SEARCH_OPERANDS(f_search_operands);
+    FUN_EXECUTE(f_execute);
+    FUN_WRITE_RESULTS(f_write_results);
+} InstructionConfig;
+
+typedef struct {
+    INSTRUCTION op;
+    ARGUMENT position;
+} DependencyNode;
 
 typedef enum {
     STOR,
     STOR_LR
-} TipoDependencia;
+} DependencyType;
 
 typedef struct {
     PipelineFlag flags;
 
-    InstrucaoConfig instrucoes[OP_STOR + 1];
-    uint8_t ciclo_execucao;
-    NoDependencia fila_dependencia[FILA_DEPENDENCIA_SIZE];
+    InstructionConfig instructions[OP_STOR + 1];
+    uint8_t execution_cycle;
+    DependencyNode dependency_queue[DEPENDENCY_QUEUE_SIZE];
 
-    FUN_BUSCA_INSTRUCAO(f_buscar_instrucao);
-    FUN_DECODIFICAR(f_decodificar);
-    FUN_BUSCA_OPERANDOS(f_busca_operandos);
-    FUN_EXECUCAO(f_executar);
-    FUN_ESCRITA_RESULTADOS(f_escrita_resultados);
+    FUN_SEARCH_INSTRUCTION(f_search_instruction);
+    FUN_DECODE(f_decode);
+    FUN_SEARCH_OPERANDS(f_search_operands);
+    FUN_EXECUTE(f_execute);
+    FUN_WRITE_RESULTS(f_write_results);
 } Pipeline;
 
-Pipeline *pipeline_criar(void);
+Pipeline *pipeline_create(void);
 void pipeline_free(Pipeline *pipeline);
 
-void pipeline_inserir_tempo_operacao(Pipeline *pipeline, INSTRUCAO op, short tempo);
-InstrucaoConfig pipeline_get_instrucao(Pipeline *pipeline, INSTRUCAO op);
-void pipeline_set_instrucao(Pipeline *pipeline, INSTRUCAO op,
-                            FUN_BUSCA_OPERANDOS(f_busca_operandos),
-                            FUN_EXECUCAO(f_executar),
-                            FUN_ESCRITA_RESULTADOS(f_escrita_resultados));
+void pipeline_insert_op_time(Pipeline *pipeline, INSTRUCTION op, short time);
+InstructionConfig pipeline_get_instruction(const Pipeline *pipeline, INSTRUCTION op);
+void pipeline_set_instruction(Pipeline *pipeline, INSTRUCTION op,
+                            FUN_SEARCH_OPERANDS(f_search_operands),
+                            FUN_EXECUTE(f_execute),
+                            FUN_WRITE_RESULTS(f_write_results));
 
-void pipeline_buscar_instrucao(Pipeline *pipeline, PALAVRA *p1_MBR, BancoRegistradores *banco, Barramento *barramento, Memoria *memoria);
-void pipeline_decodificar(Pipeline *pipeline, PALAVRA p1_MBR, PALAVRA *p2_IR, PALAVRA *p2_MAR, BancoRegistradores *banco);
-void pipeline_buscar_operandos(Pipeline *pipeline, PALAVRA p2_IR, PALAVRA p2_MAR, PALAVRA *p3_IR, PALAVRA *p3_MAR, PALAVRA *p3_MBR, BancoRegistradores *banco, Barramento *barramento, Memoria *memoria);
-void pipeline_executar(Pipeline *pipeline, PALAVRA p3_IR, PALAVRA p3_MAR, PALAVRA p3_MBR, PALAVRA *p4_MAR, PALAVRA *p4_MBR, BancoRegistradores *banco, ULA *ula);
-void pipeline_escrita_resultados(Pipeline *pipeline, PALAVRA p4_MBR, PALAVRA p4_MAR, BancoRegistradores *banco, Barramento *barramento, Memoria *memoria, ULA *ula);
+void pipeline_search_instruction(Pipeline *pipeline, WORD *p1_MBR, RegistersBank *banco, Bus *barramento, Memory *memoria);
+void pipeline_decode(Pipeline *pipeline, WORD p1_MBR, WORD *p2_IR, WORD *p2_MAR, RegistersBank *banco);
+void pipeline_search_operands(Pipeline *pipeline, WORD p2_IR, WORD p2_MAR, WORD *p3_IR, WORD *p3_MAR, WORD *p3_MBR, RegistersBank *banco, Bus *barramento, Memory *memoria);
+void pipeline_execute(Pipeline *pipeline, WORD p3_IR, WORD p3_MAR, WORD p3_MBR, WORD *p4_MAR, WORD *p4_MBR, RegistersBank *banco, ALU *ula);
+void pipeline_write_results(Pipeline *pipeline, WORD p4_MBR, WORD p4_MAR, RegistersBank *banco, Bus *barramento, Memory *memoria, ALU *ula);
 void pipeline_flush(Pipeline *pipeline);
-void pipeline_enfileirar_dep(Pipeline *pipeline, INSTRUCAO op, ARGUMENTO posicao);
-// void pipeline_pop_dep(Pipeline *pipeline, INSTRUCAO op, ARGUMENTO posicao);
-void pipeline_pop_dep(Pipeline *pipeline);
-void pipeline_unshift_dep(Pipeline *pipeline);
-bool pipeline_checar_dep(Pipeline *pipeline, ARGUMENTO posicao, TipoDependencia tipo);
+void pipeline_enqueue_dependency(Pipeline *pipeline, INSTRUCTION op, ARGUMENT posicao);
+// void pipeline_pop_dep(Pipeline *pipeline, INSTRUCTION op, ARGUMENT posicao);
+void pipeline_pop_dependency(Pipeline *pipeline);
+void pipeline_unshift_dependency(Pipeline *pipeline);
+bool pipeline_check_depency(Pipeline *pipeline, ARGUMENT posicao, DependencyType tipo);
 
 #endif

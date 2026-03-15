@@ -6,17 +6,17 @@
 #include "../utils.h"
 #include "../uc/uc.h"
 #include "../ula/ula.h"
-#include "../barramento/barramento.h"
-#include "../registradores/registradores.h"
+#include "../bus/bus.h"
+#include "../registers/registers.h"
 
 typedef struct {
-    BancoRegistradores banco_regs;
-    UC *uc;
-    ULA *ula;
+    RegistersBank registers_bank;
+    UC *cu;
+    ALU *alu;
 } CPU;
 
-CPU *CPU_criar(void);
+CPU *CPU_create(void);
 void CPU_free(CPU *cpu);
-void CPU_tick(CPU *cpu, Barramento *barramento, Memoria *memoria);
+void CPU_tick(CPU *cpu, Bus *barramento, Memory *memoria);
 
 #endif

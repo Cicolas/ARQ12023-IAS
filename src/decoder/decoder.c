@@ -1,9 +1,9 @@
 #include "./decoder.h"
 
-void memoria_para_arquivo(FILE *file, Memoria *memoria) {
-    for (int i = 0; i < memoria->tamanho; i++) {
-        PALAVRA pal = memoria_ler(memoria, i, MASK);
+void mem_to_file(FILE *file, Memory *memoria) {
+    for (int i = 0; i < memoria->size; i++) {
+        const WORD word = mem_read(memoria, i, MASK);
 
-        fprintf(file, "%lu\n", pal);
+        fprintf(file, "%lu\n", word);
     }
 }

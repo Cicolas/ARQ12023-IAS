@@ -3,9 +3,9 @@
 
 #include <stdio.h>  
 #include "../utils.h"
-#include "../memoria/memoria.h"
+#include "../memory/memory.h"
 
-void memoria_para_arquivo(FILE *file, Memoria *memoria);
-void arquivo_para_memoria(FILE *file, Memoria *memoria);
+void mem_to_file(FILE *file, Memory *memoria);
+void file_to_mem(FILE *file, Memory *memoria);
 
 #endif

@@ -1,13 +1,13 @@
 import os
 
-instrucoes = [
+instructions = [
     ("op_lsh", "OP_LSH"),
     ("op_rsh", "OP_RSH"),
     ("op_load", "OP_LOAD"),
     ("op_stor", "OP_STOR"),
-    ("op_load_menos", "OP_LOAD_MENOS"),
+    ("op_load_sub", "OP_LOAD_SUB"),
     ("op_load_mod", "OP_LOAD_MOD"),
-    ("op_load_menos_mod", "OP_LOAD_MENOS_MOD"),
+    ("op_load_sub_mod", "OP_LOAD_SUB_MOD"),
     ("op_load_mq", "OP_LOAD_MQ"),
     ("op_load_mq_m", "OP_LOAD_MQ_M"),
     ("op_jump_l", "OP_JUMP_L"),
@@ -25,8 +25,8 @@ instrucoes = [
     ("op_exit", "OP_EXIT"),
 ]
 
-pasta_exemplo = "./src/instrucoes/EXAMPLE/"
-pasta = "./src/instrucoes/"
+pasta_exemplo = "./src/instructions/EXAMPLE/"
+pasta = "./src/instructions/"
 
 conteudo: dict[str, str | None] = {
     ".c": None,
@@ -35,10 +35,10 @@ conteudo: dict[str, str | None] = {
 
 
 def main():
-    global instrucoes, conteudo
+    global instructions, conteudo
 
     files: set[str] = set(map(lambda f: f.rstrip(".c").rstrip(".h"), os.listdir(pasta)))
-    inst_a_criar: list[tuple[str]] = list(filter(lambda val: val[1] not in files, instrucoes))
+    inst_a_criar: list[tuple[str]] = list(filter(lambda val: val[1] not in files, instructions))
 
     with open(pasta_exemplo + "EXAMPLE.c") as c_ex, open(pasta_exemplo + "EXAMPLE.h") as h_ex:
         conteudo[".c"] = c_ex.read()
@@ -47,13 +47,13 @@ def main():
     for nome, NOME in inst_a_criar:
         with open(pasta + NOME + ".c", "w") as c_file, open(pasta + NOME + ".h", "w") as h_file:
             c_file.write(
-                conteudo[".c"].replace("<nome_da_operacao>", nome)
-                              .replace("<NOME_DA_OPERACAO>", NOME)
+                conteudo[".c"].replace("<op_name>", nome)
+                              .replace("<OP_NAME>", NOME)
             )
 
             h_file.write(
-                conteudo[".h"].replace("<nome_da_operacao>", nome)
-                              .replace("<NOME_DA_OPERACAO>", NOME)
+                conteudo[".h"].replace("<op_name>", nome)
+                              .replace("<OP_NAME>", NOME)
             )
 
     print(conteudo)

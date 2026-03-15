@@ -6,7 +6,7 @@ SRC_DIR := src
 BUILD_DIR := build
 
 # Source files
-SRC := ./src/main.c ./src/**/*.c ./src/instrucoes/**/*.c
+SRC := ./src/main.c ./src/**/*.c ./src/instructions/**/*.c
 
 # Object files
 OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
